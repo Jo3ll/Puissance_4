@@ -1,0 +1,113 @@
+# Importation de la bibliothèque NumPy
+import numpy as np
+
+# Définition des bases du plateau
+rangées = 6
+colonnes = 7
+
+# Fonction pour créer un plateau vide
+def création_plateau():
+    return np.zeros((rangées, colonnes))
+
+# Fonction pour placer un pion dans une colonne
+def place_pion(plateau, rang, col, pion):
+    plateau[rang][col] = pion
+
+# Fonction pour vérifier si une colonne est valide pour placer un pion
+def endroit_valide(plateau, col):
+    return plateau[rangées - 1][col] == 0
+
+# Fonction pour trouver la prochaine rangée disponible dans une colonne
+def prochaine_rangée(plateau, col):
+    for r in range(rangées):
+        if plateau[r][col] == 0:
+            return r
+
+# Fonction pour afficher le plateau
+def affichage_plateau(plateau):
+    print(np.flip(plateau, 0))
+
+# Fonction pour vérifier si un joueur a gagné
+def victoire(plateau, pion):
+    # Vérification horizontale
+    for c in range(colonnes - 3):
+        for r in range(rangées):
+            if (
+                plateau[r][c] == pion and
+                plateau[r][c + 1] == pion and
+                plateau[r][c + 2] == pion and
+                plateau[r][c + 3] == pion
+            ):
+                return True
+
+    # Vérification verticale
+    for c in range(colonnes):
+        for r in range(rangées - 3):
+            if (
+                plateau[r][c] == pion and
+                plateau[r + 1][c] == pion and
+                plateau[r + 2][c] == pion and
+                plateau[r + 3][c] == pion
+            ):
+                return True
+
+    # Vérification diagonale /
+    for c in range(colonnes - 3):
+        for r in range(rangées - 3):
+            if (
+                plateau[r][c] == pion and
+                plateau[r + 1][c + 1] == pion and
+                plateau[r + 2][c + 2] == pion and
+                plateau[r + 3][c + 3] == pion
+            ):
+                return True
+
+    # Vérification diagonale \
+    for c in range(colonnes - 3):
+        for r in range(3, rangées):
+            if (
+                plateau[r][c] == pion and
+                plateau[r - 1][c + 1] == pion and
+                plateau[r - 2][c + 2] == pion and
+                plateau[r - 3][c + 3] == pion
+            ):
+                return True
+
+    return False
+
+# Fonction principale pour jouer au jeu
+def play_game():
+    plateau = création_plateau()
+    game_over = False
+    tour = 1
+
+    while not game_over:
+        # Joueur 1
+        if tour == 1:
+            col = int(input("Joueur 1, choisissez une colonne (0-6) : "))
+
+            if endroit_valide(plateau, col):
+                rang = prochaine_rangée(plateau, col)
+                place_pion(plateau, rang, col, 1)
+
+                if victoire(plateau, 1):
+                    print("GG, Joueur 1 a gagné !!")
+                    game_over = True
+
+        # Joueur 2
+        else:
+            col = int(input("Joueur 2, choisissez une colonne (0-6) : "))
+
+            if endroit_valide(plateau, col):
+                rang = prochaine_rangée(plateau, col)
+                place_pion(plateau, rang, col, 2)
+
+                if victoire(plateau, 2):
+                    print("GG, Joueur 2 a gagné !!")
+                    game_over = True
+
+        affichage_plateau(plateau)
+        tour = 3 - tour  # Alternance entre les joueurs 1 et 2
+
+# Lancement du jeu
+play_game()
